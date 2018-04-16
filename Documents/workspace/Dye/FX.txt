@@ -1,0 +1,51 @@
+/**
+0. Исходное изображение:
+   <Aston_Martin.png>
+1. Вырезать изменяемую цветную часть, возможно с черно-серо-белыми элементами.
+   Остальное перевести в полную прозрачность, подобрав размывку края.
+   <Aston_Martin_base.png>
+2. Получить черную составляющую (выбор доминантного канала max(r,g,b) ):
+   <Aston_Martin_black.png>
+3. Получить цветную составляющую путем инверсного вычитания черной составляющей из исходного изображения:
+   <Aston_Martin_color.png>
+4. Перевести цветную составляющую в оттенки серого:
+   <Aston_Martin_color_grey.png>
+5. Задать цвет и получить цветную часть в новом цвете:
+   <Aston_Martin_color_h6446ff.png>
+6. Совместить цветную часть с черной:
+   <Aston_Martin_h64ff46>
+   Note: п. 5 и 6 можно объединить в один:
+   convert Aston_Martin_color_grey.png Aston_Martin_black.png -fx '1-(((1-#6446ff)*(1-u)*2.256)+(1-v))' Aston_Martin_h6446ff.png
+7. Совместить цветную часть с оригиналом:
+   <Aston_Martin_h6446ff_ready.png>
+
+Пункты 5-7 повторять для любого заданного цвета
+*/
+// 2.
+convert Aston_Martin_base.png -fx 'max(r,g,b)' Aston_Martin_black.png
+// 3.
+convert Aston_Martin_base.png Aston_Martin_black.png -fx '1-((1-u)-(1-v))' Aston_Martin_color.png
+// 4.
+convert Aston_Martin_color.png -fx '(r+g+b)/3' Aston_Martin_grey.png
+// 5.
+convert Aston_Martin_grey.png -fx '1-(1-#64ff46)*(1-u)*2.256' Aston_Martin_color_h64ff46.png
+// 6.
+convert Aston_Martin_color_64ff46.png Aston_Martin_black.png -fx '1-((1-u)+(1-v))' Aston_Martin_h64ff46.png
+// 7.
+composite Aston_Martin_h64ff46.png Aston_Martin.jpg Aston_Martin_h6446ff_ready.png
+
+
+
+convert Aston_Martin_color_grey.png Aston_Martin_black.png -fx '1-(((1-#ffff00)*(1-u)*2.256)+(1-(1/4*v+3/4*sin(v*pi/2))))' Aston_Martin_hffff00_sin.png
+
+/**
+Получение чистого цвета образца
+1. Нарисовать образец
+2. Перевести в ч/б по принципу доминантного канала
+3. Получить чистый цвет
+*/
+
+// Нарисовать образец цвета на картинке
+convert Aston_Martin.jpg -fill '#6446ff' -draw 'rectangle 58,32 181,155' AM.png
+
+ColorModel: #pixelBits = 24 numComponents = 3 color space = java.awt.color.ICC_ColorSpace@2dda6444 transparency = 1 has alpha = false isAlphaPre = false
